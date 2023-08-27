@@ -114,7 +114,7 @@ class PrivateRecipeApiTests(TestCase):
         original_link = 'https://example.com/recipe.pdf'
         recipe = create_recipe(user=self.user, title='sample recipe title', link=original_link)
 
-        payload = {'title': 'new recipe title'}
+        payload = {'title':'new recipe title'}
         url = detail_url(recipe.id)
         res = self.client.patch(url, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
