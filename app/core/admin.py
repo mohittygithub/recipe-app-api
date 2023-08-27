@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from core import models
 from django.utils.translation import gettext_lazy as _
 
+
 class UserAdmin(BaseUserAdmin):
     """Define admin pages for users"""
     ordering = ['id']

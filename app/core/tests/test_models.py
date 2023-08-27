@@ -5,16 +5,20 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core import models
 
+
 def create_user(email='user@example.com', password='User@1234'):
     """Create and return a user"""
-    return get_user_model().objects.create_user(email,password)
+    return get_user_model().objects.create_user(email, password)
 
 
 class ModelTests(TestCase):
     def test_create_user_with_email_successful(self):
         email = "test@example.com"
         password = "test1234"
-        user = get_user_model().objects.create_user(email=email, password=password)
+        user = get_user_model().objects.create_user(
+            email=email,
+            password=password
+        )
 
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
@@ -36,7 +40,10 @@ class ModelTests(TestCase):
             get_user_model().objects.create_user("", "test1234")
 
     def test_create_superuser(self):
-        user = get_user_model().objects.create_superuser("test@example.com", "test1234")
+        user = get_user_model().objects.create_superuser(
+            "test@example.com",
+            "test1234"
+        )
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)

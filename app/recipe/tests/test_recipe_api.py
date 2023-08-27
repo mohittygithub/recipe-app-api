@@ -15,23 +15,26 @@ from recipe.serializers import (
 
 RECIPES_URL = reverse('recipe:recipe-list')
 
+
 def detail_url(recipe_id):
     """Create and return a recipe detail url"""
     return reverse('recipe:recipe-detail', args=[recipe_id])
 
+
 def create_recipe(user, **params):
     """Create and return a recipe"""
     defaults = {
-        'title':'Sample Recipe',
-        'time_minutes':5,
-        'price':Decimal('5.50'),
-        'description':'Sample Recipe description',
-        'link':'http://example.com/recipe.pdf',
+        'title': 'Sample Recipe',
+        'time_minutes': 5,
+        'price': Decimal('5.50'),
+        'description': 'Sample Recipe description',
+        'link': 'http://example.com/recipe.pdf',
     }
     defaults.update(params)
 
     recipe = Recipe.objects.create(user=user, **defaults)
     return recipe
+
 
 def create_user(**params):
     """Create and return new user"""
@@ -74,7 +77,10 @@ class PrivateRecipeApiTests(TestCase):
 
     def test_recipe_list_limited_to_user(self):
         """Test list of recipes limited to the authenticated users"""
-        other_user = create_user(email='other@example.com', password='Other@1234')
+        other_user = create_user(
+            email='other@example.com',
+            password='Other@1234'
+        )
         create_recipe(user=other_user)
         create_recipe(user=self.user)
 
@@ -96,9 +102,9 @@ class PrivateRecipeApiTests(TestCase):
     def test_create_recipe(self):
         """Test creating a recipe"""
         payload = {
-            'title':'Sample Recipe',
-            'time_minutes':5,
-            'price':Decimal('5.50'),
+            'title': 'Sample Recipe',
+            'time_minutes': 5,
+            'price': Decimal('5.50'),
         }
         res = self.client.post(RECIPES_URL, payload)
 
@@ -112,9 +118,13 @@ class PrivateRecipeApiTests(TestCase):
     def test_partial_update(self):
         """Test patial update of a recipe"""
         original_link = 'https://example.com/recipe.pdf'
-        recipe = create_recipe(user=self.user, title='sample recipe title', link=original_link)
+        recipe = create_recipe(
+            user=self.user,
+            title='sample recipe title',
+            link=original_link
+        )
 
-        payload = {'title':'new recipe title'}
+        payload = {'title': 'new recipe title'}
         url = detail_url(recipe.id)
         res = self.client.patch(url, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -134,11 +144,11 @@ class PrivateRecipeApiTests(TestCase):
         )
 
         payload = {
-            'title':'New Recipe',
-            'time_minutes':5,
-            'price':Decimal('5.50'),
-            'description':'New Recipe description',
-            'link':'http://example.com/new-recipe.pdf',
+            'title': 'New Recipe',
+            'time_minutes': 5,
+            'price': Decimal('5.50'),
+            'description': 'New Recipe description',
+            'link': 'http://example.com/new-recipe.pdf',
         }
         url = detail_url(recipe.id)
         res = self.client.put(url, payload)
@@ -156,7 +166,7 @@ class PrivateRecipeApiTests(TestCase):
 
         payload = {'user': new_user.id}
         url = detail_url(recipe.id)
-        res = self.client.patch(url, payload)
+        self.client.patch(url, payload)
 
         recipe.refresh_from_db()
         self.assertEqual(recipe.user, self.user)
@@ -172,12 +182,13 @@ class PrivateRecipeApiTests(TestCase):
 
     def test_delete_other_user_recipe(self):
         """Test trying to delete othere user's recipe gives error"""
-        new_user = create_user(email='newuser@example.com', password='User@1234')
+        new_user = create_user(
+            email='newuser@example.com',
+            password='User@1234'
+        )
         recipe = create_recipe(user=new_user)
         url = detail_url(recipe.id)
         res = self.client.delete(url)
 
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
         self.assertTrue(Recipe.objects.filter(id=recipe.id).exists())
-
-
